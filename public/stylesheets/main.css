@@ -57,15 +57,17 @@ h6 {
   flex: 1 1 30%;
   margin: 5px 10px 5px 10px;
   border: 1px solid #ebebeb;
-  border-radius: 16px;
   background: #fff;
+
+  border-radius: 5px;
+  box-shadow: 3px 3px 20px rgba(0, 0, 0, 0.1); 
 }
 
 .product-face {
   height: 200px;
   width: 100%;
   display: table;
-  background: transparent;
+  background: #abb8bb0a;
   color: #22435a;
 }
 
@@ -106,18 +108,17 @@ h6 {
 .product-info {
   text-align: center;
   padding: 10px;
-  background: #22435a;
-  border-color: #d4d4d4;
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 5px 5px;
   border-width: 0px;
   border-style: solid;
   display: flex;
+  border-top: 1px solid #f5f5f5fc;
 }
 
 .product-info-ads {
   text-align: center;
   padding: 10px 0;
-  background: #1da05b;
+  background: #22435a;
   border-color: #d4d4d4;
   border-radius: 0 0 8px 8px;
   border-width: 0px;
@@ -126,12 +127,17 @@ h6 {
   margin: 0 auto;
 }
 .product-price {
-  flex: 0 0 15%;
+  width: 100px;
+  padding: 5px 0;
+  letter-spacing: 1px;
+  border: 0;
+  border-radius: 2px;
+  outline: 0;
 }
 .product-price p {
-  color: #fff;
+  color: #8650b5;
   font-weight: 500;
-  font-size: 20px;
+  font-size: 24px;
   line-height: 30px;
   padding: 0;
   margin: 0;
@@ -143,9 +149,17 @@ h6 {
 .product-time p {
   font-size: 12px;
   letter-spacing: 3px;
-  color: #fff;
-  margin: 10px 0 0 0;
+  color: #0b1e3c99;
+  margin: 15px 0 0 0;
   text-align: right;
+}
+
+.product-time label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: #8650b5;
+  text-align: right;
+  display: block;
 }
 
 .product-title {
@@ -176,12 +190,6 @@ h6 {
 }
 
 .loading-container { margin: 20px auto;  flex: 0 0 100%;}
-
-.loading-container:hover {
-  border-color: transparent #E45635 transparent #E45635;
-}
-
-.loading-container:hover,
 .loading-container {
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
@@ -195,8 +203,8 @@ h6 {
   -o-animation: loading-text-opacity 2s linear 0s infinite normal;
   -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
   animation: loading-text-opacity 2s linear 0s infinite normal;
-  color: #cc3366;
-  font-size: 16px;
+  color: #3085b1;
+  font-size: 24px;
   font-weight: bold;
   margin: 10px;
   opacity: 0;
@@ -205,8 +213,8 @@ h6 {
 }
 
 .end-text {
-  color: #3ca896;
-  font-size: 16px;
+  color: #2bc77b;
+  font-size: 24px;
   font-weight: bold;
   margin: 10px;
   text-align: center;

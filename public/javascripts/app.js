@@ -6,6 +6,7 @@ class App extends React.Component {
       isLoading: false,
       hasMore: true,
       curPage: 1,
+      curLimit: 15,
       curAds: 20,
       numAds: 0,
       sort: false,
@@ -24,45 +25,51 @@ class App extends React.Component {
       } = this;
 
       if (error || isLoading || !hasMore) return;
-
-      if (
-        window.innerHeight + document.documentElement.scrollTop
-        === document.documentElement.offsetHeight
-      ) {
+      if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
           loadItems(false, this.state.order);
       }
     };
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     this.loadItems(false, this.state.order);
   }
 
   loadItems = async (sort, order) => {
     const page = this.state.curPage;
+    const limit = this.state.curLimit;
     this.setState({ isLoading: true, sort: sort }, () => {
-      fetch(`http://localhost:3000/products?_page=${page}&_limit=15&_sort=${order}`)
+      fetch(`http://localhost:3000/products?_page=${page}&_limit=${limit}&_sort=${order}`)
       .then(res => res.json())
       .then((results) => {
         const nextItems = results;
-        this.setState({ hasMore: (results.length > 0), curPage: (sort) ? 1 : page + 1, isLoading: false, items: [...(sort) ? [] : this.state.items, ...nextItems, ], });
-        this.state.items.map((item, index) => {
-          if((index + 1) % this.state.curAds === 0 ){
-            const num = this.state.numAds + 1;
-            const ads = this.state.curAds + 20
-            const adsItems = {
-              id: Math.floor(Math.random() * (100000 - 0)) + 0 + '-' + (Math.random()).toString(36).substr(2),
-              face: '/ads/?r=' + Math.floor(num),
-              ads: true
-            }
-            this.state.items.splice(this.state.curAds, 0, adsItems);
-            this.setState({ curAds: this.state.curAds + ads, numAds: num});
-          }
+        this.setState({ 
+          hasMore: (results.length > 0), 
+          curPage: (sort) ? 1 : page + 1, 
+          isLoading: false, 
+          items: [...(sort) ? [] : this.state.items, ...nextItems, ], 
         });
+        this.loadAds();
       })
       .catch((err) => {
         this.setState({ error: err.message, isLoading: false, });
       })
+    });
+  }
+
+  loadAds = () => {
+    this.state.items.map((item, index) => {
+      if((index + 1) % this.state.curAds === 0 ){
+        const num = this.state.numAds + 1;
+        const ads = this.state.curAds + 20
+        const adsItems = {
+          id: Math.floor(Math.random() * (100000 - 0)) + 0 + '-' + (Math.random()).toString(36).substr(2),
+          face: '/ads/?r=' + num,
+          ads: true
+        }
+        this.state.items.splice(this.state.curAds, 0, adsItems);
+        this.setState({ curAds: ads, numAds: num});
+      }
     });
   }
 
@@ -89,7 +96,7 @@ class App extends React.Component {
       relativeTime = Math.round(elapsed/msDay) + ' days ago';   
     }
     else {
-      relativeTime = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long', day: '2-digit' }).format(prev);   
+      relativeTime = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: '2-digit' }).format(prev);   
     }
     return ( relativeTime )
   }
@@ -122,7 +129,7 @@ class App extends React.Component {
         </header>
         <section className="products">
           {items.map((item, index) => 
-            <div className={(!item.ads) ? "product-card" : "product-ads"} key={index} style={{display: (isLoading && sort) ? "none" : ""}}>
+            <div className={(!item.ads) ? "product-card" : "product-ads"} key={item.id} style={{display: (isLoading && sort) ? "none" : ""}}>
               {!item.ads ?
                   <div className="product-wrapper">
                     <div className="product-face">
@@ -135,6 +142,7 @@ class App extends React.Component {
                         <p>{this.formatedCurrency(item.price)}</p>
                       </div>
                       <div className="product-time">
+                        <label>{item.id}</label>
                         <p>{this.formatedDate(item.date)}</p>
                       </div>
                     </div>
