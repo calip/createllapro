@@ -11,6 +11,7 @@ class App extends React.Component {
       numAds: 0,
       sort: false,
       order: 'size',
+      idle: false,
       items: []
     };
 
@@ -26,30 +27,51 @@ class App extends React.Component {
 
       if (error || isLoading || !hasMore) return;
       if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
-          loadItems(false, this.state.order);
+          loadItems(false, false, this.state.order);
       }
     };
   }
 
   componentDidMount = () => {
-    this.loadItems(false, this.state.order);
+    this.loadItems(false, false, this.state.order);
   }
 
-  loadItems = async (sort, order) => {
+  checkIdleTime = () => {
+    let idleTimer;
+    const self = this
+    window.onmousemove = function () {
+      clearTimeout(idleTimer);
+      if(!self.state.idle){
+        
+        idleTimer = setTimeout(() => {
+          self.idleTime()
+        }, 5000);
+      }
+    };
+  }
+
+  idleTime = () => {
+    this.loadItems(true, this.state.sort, this.state.order);
+  }
+
+  loadItems = async (idle, sort, order) => {
     const page = this.state.curPage;
     const limit = this.state.curLimit;
-    this.setState({ isLoading: true, sort: sort }, () => {
+    this.setState({ isLoading: (idle) ? false : true, sort: sort, idle: idle }, () => {
       fetch(`http://localhost:3000/products?_page=${page}&_limit=${limit}&_sort=${order}`)
       .then(res => res.json())
       .then((results) => {
         const nextItems = results;
-        this.setState({ 
-          hasMore: (results.length > 0), 
-          curPage: (sort) ? 1 : page + 1, 
-          isLoading: false, 
-          items: [...(sort) ? [] : this.state.items, ...nextItems, ], 
-        });
-        this.loadAds();
+        if(!idle){
+          this.setState({ 
+            hasMore: (results.length > 0), 
+            curPage: (sort) ? 1 : page + 1, 
+            isLoading: false, 
+            items: [...(sort) ? [] : this.state.items, ...nextItems, ], 
+          });
+          this.loadAds();
+          this.checkIdleTime();
+        }
       })
       .catch((err) => {
         this.setState({ error: err.message, isLoading: false, });
@@ -107,7 +129,7 @@ class App extends React.Component {
 
   sortProducts = (event) => {
     this.setState({ sort: true, order: event.target.value });
-    this.loadItems(true, event.target.value);
+    this.loadItems(false, true, event.target.value);
   }
 
   render() {
